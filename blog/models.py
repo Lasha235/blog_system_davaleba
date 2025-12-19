@@ -10,10 +10,17 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=200)
     content = models.TextField()
+    tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -27,9 +34,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.user.username}'
-
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
