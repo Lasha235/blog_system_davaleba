@@ -1,14 +1,18 @@
-from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView
 from .models import Post
 
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
 
-def post_list(request):
-    posts = (Post.objects.select_related('author', 'author__profile').order_by('-created_at'))
+    def get_queryset(self):
+        return (Post.objects.select_related('author', 'author__profile').order_by('-created_at'))
 
-    return render(request, 'blog/post_list.html', {'posts': posts})
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
 
-
-def post_detail(request, post_id):
-    post = (Post.objects.select_related('author').prefetch_related('comments__author', 'tags').get(id=post_id))
-
-    return render(request, 'blog/post_detail.html', {'post': post})
+    def get_queryset(self):
+        return (Post.objects.select_related('author').prefetch_related('comments__user', 'tags'))
